@@ -1,0 +1,27 @@
+@model ImapSettings
+
+<fieldset asp-for="Server"
+    label="@T["Server"]"
+    hint="@T["The IMAP server to connect to."]"
+    type="text">
+</fieldset>
+<fieldset asp-for="Port"
+    label="@T["Port"]"
+    hint="@T["The IMAP port to connect to. Usually 993 for SSL and 143 for non-SSL."]"
+    type="number">
+</fieldset>
+<fieldset asp-for="Username"
+    label="@T["Username"]"
+    hint="@T["The IMAP username to use."]"
+    type="text">
+</fieldset>
+<fieldset asp-for="Password"
+    label="@T["Password"]"
+    hint="@T["The IMAP password to use."]"
+    type="password">
+</fieldset>
+<fieldset asp-for="UseSsl"
+    label="@T["Use SSL"]"
+    hint="@T["Whether to use SSL when connecting to the IMAP server."]"
+    type="checkbox">
+</fieldset>

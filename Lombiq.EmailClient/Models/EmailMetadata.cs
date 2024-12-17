@@ -17,10 +17,10 @@ public class EmailMetadata
     public string Protocol { get; set; }
 
     /// <summary>
-    /// Gets or sets the unique identifier of the email within the protocol (e.g., UID in IMAP).
-    /// Note that this identifier is unique only within the context of a specific folder.
+    /// Gets or sets the unique identifier (i.e., UID) of the email if the protocol is IMAP.
+    /// Note that this identifier is unique only within the context of a specific folder, but it's sequential.
     /// </summary>
-    public string ProtocolUniqueId { get; set; }
+    public string ImapUniqueId { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the folder where the email is stored (e.g., "INBOX", "Sent").
