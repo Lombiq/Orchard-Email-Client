@@ -1,4 +1,4 @@
-# Lombiq <add project name here>
+# Lombiq Email Client
 
 ## About
 

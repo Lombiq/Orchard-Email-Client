@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <DefaultItemExcludes>$(DefaultItemExcludes);.git*;node_modules\**</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Title>Lombiq Email Client</Title>
+    <Authors>Lombiq Technologies</Authors>
+    <Copyright>Copyright © 2021, Lombiq Technologies Ltd.</Copyright>
+    <Description>Lombiq Email Client for Orchard Core: With the help of this module, you can do advanced email operations such as downloading them using IMAP.</Description>
+    <PackageIcon>NuGetIcon.png</PackageIcon>
+    <PackageTags>OrchardCore;Lombiq;AspNetCore;Email;IMAP</PackageTags>
+    <RepositoryUrl>https://github.com/Lombiq/Orchard-Email-Client</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Lombiq/Orchard-Email-Client/blob/dev/Readme.md</PackageProjectUrl>
+    <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="node_modules\**" />
+    <None Include="../Readme.md" Link="Readme.md" />
+    <None Include="NuGetIcon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MailKit" Version="4.9.0" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(NuGetBuild)' != 'true'">
+    <ProjectReference Include="..\..\..\Libraries\Lombiq.HelpfulLibraries\Lombiq.HelpfulLibraries.OrchardCore\Lombiq.HelpfulLibraries.OrchardCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(NuGetBuild)' == 'true'">
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="11.0.0" />
+  </ItemGroup>
+
+</Project>
