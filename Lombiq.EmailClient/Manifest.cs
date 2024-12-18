@@ -4,7 +4,7 @@ using static Lombiq.EmailClient.Constants.FeatureIds;
 [assembly: Module(
     Name = "Lombiq Email Client",
     Author = "Lombiq Technologies",
-    Website = "https://github.com/Lombiq/Orchard-EmailClient",
+    Website = "https://github.com/Lombiq/Orchard-Email-Client",
     Version = "0.0.1"
 )]
 

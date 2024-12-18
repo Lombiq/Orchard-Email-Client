@@ -1,9 +1,8 @@
 namespace Lombiq.EmailClient.Models;
 
-public class EmailFilterParameters
+public class EmailFetchParameters
 {
+    public string MessageId { get; set; }
     public string Folder { get; set; }
-    public string Subject { get; set; }
-    public uint AfterImapUniqueId { get; set; }
     public EmailDownloadOptions DownloadOptions { get; set; }
 }

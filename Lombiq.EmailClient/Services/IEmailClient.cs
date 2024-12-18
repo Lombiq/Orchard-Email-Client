@@ -7,5 +7,7 @@ namespace Lombiq.EmailClient.Services;
 
 public interface IEmailClient : IDisposable
 {
-    Task<IEnumerable<EmailMessage>> GetEmailsAsync(EmailFilterParameters filterParameters);
+    Task<IEnumerable<EmailMessage>> GetEmailsAsync(EmailFilterParameters parameters);
+
+    Task DownloadEmailAsync(EmailMessage emailMessage, EmailDownloadOptions downloadOptions);
 }

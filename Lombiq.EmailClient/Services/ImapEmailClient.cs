@@ -19,29 +19,29 @@ public class ImapEmailClient : IEmailClient
     private ImapClient _imapClient;
     private bool _isDisposed;
 
-    public ImapEmailClient(IOptionsSnapshot<ImapSettings> imapSettings)
-    {
+    public ImapEmailClient(IOptionsSnapshot<ImapSettings> imapSettings) =>
         _imapSettings = imapSettings.Value;
-    }
 
-    public async Task<IEnumerable<EmailMessage>> GetEmailsAsync(EmailFilterParameters filterParameters)
+    public async Task<IEnumerable<EmailMessage>> GetEmailsAsync(EmailFilterParameters parameters)
     {
+        ArgumentNullException.ThrowIfNull(parameters);
+
         await InitializeImapClientAndConnectIfNeededAsync();
-        var folder = await OpenFolderAsync(filterParameters.Folder);
+        var folder = await OpenFolderAsync(parameters.Folder);
 
         SearchQuery searchQuery = null;
 
-        if (filterParameters.AfterImapUniqueId > 0)
+        if (parameters.AfterImapUniqueId > 0)
         {
             searchQuery = SearchQuery.Uids(
-                new UniqueIdRange(new UniqueId(filterParameters.AfterImapUniqueId + 1), UniqueId.MaxValue));
+                new UniqueIdRange(new UniqueId(parameters.AfterImapUniqueId + 1), UniqueId.MaxValue));
         }
 
-        if (!string.IsNullOrEmpty(filterParameters.Subject))
+        if (!string.IsNullOrEmpty(parameters.Subject))
         {
             searchQuery = searchQuery == null
-                ? SearchQuery.SubjectContains(filterParameters.Subject)
-                : searchQuery.And(SearchQuery.SubjectContains(filterParameters.Subject));
+                ? SearchQuery.SubjectContains(parameters.Subject)
+                : searchQuery.And(SearchQuery.SubjectContains(parameters.Subject));
         }
 
         var uids = await folder.SearchAsync(searchQuery ?? SearchQuery.All);
@@ -55,7 +55,7 @@ public class ImapEmailClient : IEmailClient
 
         foreach (var summary in messageSummaries)
         {
-            var emailMessage = await CreateEmailMessageAsync(filterParameters, summary, folder);
+            var emailMessage = await CreateEmailMessageAsync(parameters.DownloadOptions, summary, folder);
 
             emailMessages.Add(emailMessage);
         }
@@ -63,8 +63,33 @@ public class ImapEmailClient : IEmailClient
         return emailMessages;
     }
 
+    public async Task DownloadEmailAsync(EmailMessage emailMessage, EmailDownloadOptions downloadOptions)
+    {
+        ArgumentNullException.ThrowIfNull(emailMessage);
+        ArgumentNullException.ThrowIfNull(downloadOptions);
+
+        if (emailMessage.Metadata.Protocol != Protocols.Imap)
+        {
+            throw new InvalidOperationException("The email message protocol is not IMAP.");
+        }
+
+        await InitializeImapClientAndConnectIfNeededAsync();
+        var folder = await OpenFolderAsync(emailMessage.Metadata.FolderName);
+
+        var uniqueId = new UniqueId(emailMessage.Metadata.ImapUniqueId);
+        var message = await folder.GetMessageAsync(uniqueId);
+
+        await DownloadEmailBodyIfNeededAsync(emailMessage, downloadOptions, folder, uniqueId, fullMessage: message);
+        await DownloadEmailAttachmentsIfNeededAsync(
+            emailMessage,
+            downloadOptions,
+            folder,
+            uniqueId,
+            mimeAttachments: message.Attachments);
+    }
+
     private async Task<EmailMessage> CreateEmailMessageAsync(
-        EmailFilterParameters filterParameters,
+        EmailDownloadOptions downloadOptions,
         IMessageSummary summary,
         IMailFolder folder)
     {
@@ -74,7 +99,7 @@ public class ImapEmailClient : IEmailClient
             {
                 GlobalMessageId = summary.Envelope?.MessageId,
                 Protocol = Protocols.Imap,
-                ImapUniqueId = summary.UniqueId.Id.ToTechnicalString(),
+                ImapUniqueId = summary.UniqueId.Id,
                 FolderName = folder.FullName,
                 IsReply = summary.Envelope?.InReplyTo != null,
             },
@@ -92,21 +117,63 @@ public class ImapEmailClient : IEmailClient
         emailMessage.Header.Cc.AddRange(CreateEmailAddresses(summary.Envelope?.Cc?.Mailboxes));
         emailMessage.Header.Bcc.AddRange(CreateEmailAddresses(summary.Envelope?.Bcc?.Mailboxes));
 
-        if (filterParameters.ShouldDownloadBodyAsync != null &&
-            await filterParameters.ShouldDownloadBodyAsync(emailMessage))
+        await DownloadEmailBodyIfNeededAsync(emailMessage, downloadOptions, folder, summary.UniqueId, summary: summary);
+        await DownloadEmailAttachmentsIfNeededAsync(
+            emailMessage,
+            downloadOptions,
+            folder,
+            summary.UniqueId,
+            summary.Attachments);
+
+        return emailMessage;
+    }
+
+    private static async Task DownloadEmailBodyIfNeededAsync(
+        EmailMessage emailMessage,
+        EmailDownloadOptions downloadOptions,
+        IMailFolder folder,
+        UniqueId uniqueId,
+        IMessageSummary summary = null,
+        MimeMessage fullMessage = null)
+    {
+        if (downloadOptions.ShouldDownloadBodyAsync == null ||
+            await downloadOptions.ShouldDownloadBodyAsync(emailMessage))
         {
-            var bodyPart = summary.TextBody ?? summary.HtmlBody;
-            if (bodyPart != null)
+            if (summary != null)
             {
-                var body = await folder.GetBodyPartAsync(summary.UniqueId, bodyPart);
-                emailMessage.Content.Body = new EmailBody { Body = body.ToString(), IsHtml = summary.HtmlBody != null };
+                var bodyPart = summary.TextBody ?? summary.HtmlBody;
+                if (bodyPart != null)
+                {
+                    var body = await folder.GetBodyPartAsync(uniqueId, bodyPart);
+                    emailMessage.Content.Body = new EmailBody
+                    {
+                        Body = body.ToString(), IsHtml = summary.HtmlBody != null,
+                    };
+                    emailMessage.Content.IsBodyDownloaded = true;
+                }
+            }
+            else if (fullMessage != null)
+            {
+                emailMessage.Content.Body = new EmailBody
+                {
+                    Body = fullMessage.TextBody ?? fullMessage.HtmlBody, IsHtml = fullMessage.HtmlBody != null,
+                };
                 emailMessage.Content.IsBodyDownloaded = true;
             }
         }
+    }
 
-        if (summary.Attachments?.Any() ?? false)
+    private async Task DownloadEmailAttachmentsIfNeededAsync(
+        EmailMessage emailMessage,
+        EmailDownloadOptions downloadOptions,
+        IMailFolder folder,
+        UniqueId uniqueId,
+        IEnumerable<BodyPartBasic> attachmentSummaries = null,
+        IEnumerable<MimeEntity> mimeAttachments = null)
+    {
+        if (attachmentSummaries != null)
         {
-            foreach (var attachmentSummary in summary.Attachments)
+            foreach (var attachmentSummary in attachmentSummaries)
             {
                 var attachmentMetadata = new AttachmentMetadata
                 {
@@ -115,10 +182,10 @@ public class ImapEmailClient : IEmailClient
                     Size = attachmentSummary.Octets,
                 };
 
-                if (filterParameters.ShouldDownloadAttachmentAsync != null &&
-                    await filterParameters.ShouldDownloadAttachmentAsync(emailMessage, attachmentMetadata))
+                if (downloadOptions.ShouldDownloadAttachmentAsync == null ||
+                    await downloadOptions.ShouldDownloadAttachmentAsync(emailMessage, attachmentMetadata))
                 {
-                    var attachment = await folder.GetBodyPartAsync(summary.UniqueId, attachmentSummary);
+                    var attachment = await folder.GetBodyPartAsync(uniqueId, attachmentSummary);
                     var filePath = SaveAttachmentToFile(attachmentSummary.FileName, attachment);
                     attachmentMetadata.DownloadedFilePath = filePath;
                     emailMessage.Content.AreAttachmentsDownloaded = true;
@@ -127,8 +194,28 @@ public class ImapEmailClient : IEmailClient
                 emailMessage.Content.Attachments.Add(attachmentMetadata);
             }
         }
+        else if (mimeAttachments != null)
+        {
+            foreach (var attachment in mimeAttachments.OfType<MimePart>())
+            {
+                var attachmentMetadata = new AttachmentMetadata
+                {
+                    FileName = attachment.FileName,
+                    MimeType = attachment.ContentType.MimeType,
+                    Size = attachment.Content.Stream.Length,
+                };
 
-        return emailMessage;
+                if (downloadOptions.ShouldDownloadAttachmentAsync == null ||
+                    await downloadOptions.ShouldDownloadAttachmentAsync(emailMessage, attachmentMetadata))
+                {
+                    var filePath = SaveAttachmentToFile(attachment.FileName, attachment);
+                    attachmentMetadata.DownloadedFilePath = filePath;
+                    emailMessage.Content.AreAttachmentsDownloaded = true;
+                }
+
+                emailMessage.Content.Attachments.Add(attachmentMetadata);
+            }
+        }
     }
 
     private static IEnumerable<EmailAddress> CreateEmailAddresses(IEnumerable<MailboxAddress> mailboxes) =>
@@ -153,16 +240,15 @@ public class ImapEmailClient : IEmailClient
         await _imapClient.AuthenticateAsync(_imapSettings.Username, _imapSettings.Password);
     }
 
-    private string SaveAttachmentToFile(string fileName, MimeEntity attachment)
+    private static string SaveAttachmentToFile(string fileName, MimeEntity attachment)
     {
+        // Temporary code here.
         var filePath = Path.Combine(Path.GetTempPath(), fileName);
 
-        using (var stream = File.Create(filePath))
+        using var stream = File.Create(filePath);
+        if (attachment is MimePart mimePart)
         {
-            if (attachment is MimePart mimePart)
-            {
-                mimePart.Content.DecodeTo(stream);
-            }
+            mimePart.Content.DecodeTo(stream);
         }
 
         return filePath;
