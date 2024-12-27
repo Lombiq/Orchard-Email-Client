@@ -9,5 +9,7 @@ public interface IEmailClient : IDisposable
 {
     Task<IEnumerable<EmailMessage>> GetEmailsAsync(EmailFilterParameters parameters);
 
-    Task DownloadEmailAsync(EmailMessage emailMessage, EmailDownloadOptions downloadOptions);
+    Task DownloadBodyAsync(EmailMessage emailMessage);
+
+    Task DownloadAttachmentAsync(EmailMessage emailMessage, AttachmentMetadata attachmentMetadata);
 }
