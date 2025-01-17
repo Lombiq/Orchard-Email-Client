@@ -12,7 +12,7 @@ public class ImapSettingsConfiguration : IConfigureOptions<ImapSettings>
 
     public void Configure(ImapSettings options)
     {
-        if (!string.IsNullOrEmpty(options.Server)) return;
+        if (!string.IsNullOrEmpty(options.Host)) return;
 
         var settings = _siteService.GetSettingsAsync<ImapSettings>().GetAwaiter().GetResult();
 
