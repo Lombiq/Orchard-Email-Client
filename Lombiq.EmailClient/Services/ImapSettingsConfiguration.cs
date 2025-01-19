@@ -19,3 +19,19 @@ public class ImapSettingsConfiguration : IConfigureOptions<ImapSettings>
         settings.CopyTo(options);
     }
 }
+
+public class EmailSyncSettingsConfiguration : IConfigureOptions<EmailSyncSettings>
+{
+    private readonly ISiteService _siteService;
+
+    public EmailSyncSettingsConfiguration(ISiteService siteService) => _siteService = siteService;
+
+    public void Configure(EmailSyncSettings options)
+    {
+        if (!string.IsNullOrEmpty(options.SubjectFilter)) return;
+
+        var settings = _siteService.GetSettingsAsync<EmailSyncSettings>().GetAwaiter().GetResult();
+
+        settings.CopyTo(options);
+    }
+}

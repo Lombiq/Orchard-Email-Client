@@ -48,6 +48,6 @@ public class EmailSyncSettingsDisplayDriver : SiteDisplayDriver<EmailSyncSetting
     private Task<bool> AuthorizeAsync(BuildEditorContext context) =>
         _hca.HttpContext?.User is { } user &&
         context.GroupId.EqualsOrdinalIgnoreCase(GroupId)
-            ? _authorizationService.AuthorizeAsync(user, Permissions.ImapPermissions.ManageEmailSyncSettings)
+            ? _authorizationService.AuthorizeAsync(user, Permissions.EmailSyncPermissions.ManageEmailSyncSettings)
             : Task.FromResult(false);
 }

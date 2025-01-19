@@ -6,11 +6,11 @@ namespace Lombiq.EmailClient.Permissions;
 
 public class EmailSyncPermissions : AdminPermissionBase
 {
-    public static readonly Permission ManageImapSettings = new(nameof(EmailSyncPermissions), "Manage email sync settings");
+    public static readonly Permission ManageEmailSyncSettings = new(nameof(EmailSyncPermissions), "Manage email sync settings");
 
     private static readonly IReadOnlyList<Permission> _adminPermissions =
     [
-        ManageImapSettings,
+        ManageEmailSyncSettings,
     ];
 
     protected override IEnumerable<Permission> AdminPermissions => _adminPermissions;

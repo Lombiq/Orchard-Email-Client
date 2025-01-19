@@ -5,6 +5,6 @@ namespace Lombiq.EmailClient.Models;
 
 public class EmailSyncStateDocument : Document
 {
-    public uint LastImapUniqueId { get; set; }
-    public DateTime? LastSyncedTimeUtc { get; set; }
+    public uint LastSyncedImapUniqueId { get; set; }
+    public DateTime? LastSyncedDateUtc { get; set; }
 }

@@ -19,6 +19,7 @@ public class ImapEmailClient : IEmailClient
     private ImapClient _imapClient;
     private bool _isDisposed;
     private IDictionary<string, MimeMessage> _downloadedMessages = new Dictionary<string, MimeMessage>();
+    private IList<string> _tempFilePaths = new List<string>();
 
     public ImapEmailClient(IOptionsSnapshot<ImapSettings> imapSettings) =>
         _imapSettings = imapSettings.Value;
@@ -56,7 +57,9 @@ public class ImapEmailClient : IEmailClient
         emailMessage.Content.IsBodyDownloaded = true;
     }
 
-    public async Task<string> DownloadAttachmentToTemporaryLocationAsync(EmailMessage emailMessage, AttachmentMetadata attachmentMetadata)
+    public async Task<string> DownloadAttachmentToTemporaryLocationAsync(
+        EmailMessage emailMessage,
+        AttachmentMetadata attachmentMetadata)
     {
         ArgumentNullException.ThrowIfNull(emailMessage);
         ArgumentNullException.ThrowIfNull(attachmentMetadata);
@@ -67,6 +70,8 @@ public class ImapEmailClient : IEmailClient
             att.ContentDisposition.FileName == attachmentMetadata.FileName);
         var filePath = await SaveAttachmentToFileAsync(attachmentMetadata.FileName, attachment);
         attachmentMetadata.DownloadedFilePath = filePath;
+
+        _tempFilePaths.Add(filePath);
 
         return filePath;
     }
@@ -192,6 +197,13 @@ public class ImapEmailClient : IEmailClient
         return filePath;
     }
 
+    private void DisposeTempFiles()
+    {
+        foreach (var filePath in _tempFilePaths.Where(File.Exists)) File.Delete(filePath);
+
+        _tempFilePaths.Clear();
+    }
+
     #region IDisposable
 
     public void Dispose()
@@ -209,6 +221,8 @@ public class ImapEmailClient : IEmailClient
             if (_imapClient?.IsConnected ?? false) _imapClient.Disconnect(quit: true);
 
             _imapClient?.Dispose();
+
+            DisposeTempFiles();
         }
 
         _isDisposed = true;
