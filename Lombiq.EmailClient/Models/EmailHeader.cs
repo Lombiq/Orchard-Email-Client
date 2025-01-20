@@ -38,10 +38,4 @@ public class EmailHeader
     /// This value is in UTC but reflects the sender's system clock and timezone.
     /// </summary>
     public DateTime? SentDateUtc { get; set; }
-
-    /// <summary>
-    /// Gets or sets the date and time when the email was received by the recipient's mail server.
-    /// This value is in UTC and is typically more reliable than the sent date.
-    /// </summary>
-    public DateTime? ReceivedDateUtc { get; set; }
 }

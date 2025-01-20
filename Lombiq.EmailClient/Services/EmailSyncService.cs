@@ -1,4 +1,5 @@
 ﻿using Lombiq.EmailClient.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Documents;
 using OrchardCore.Modules;
@@ -10,24 +11,27 @@ namespace Lombiq.EmailClient.Services;
 
 public class EmailSyncService : IEmailSyncService
 {
-    private readonly IEnumerable<IEmailSyncObserver> _emailSyncObservers;
+    private readonly IEnumerable<IEmailSyncEventHandler> _emailSyncEventHandlers;
     private readonly IEmailClient _emailClient;
     private readonly IDocumentManager<EmailSyncStateDocument> _emailSyncStateDocumentManager;
     private readonly IOptionsSnapshot<EmailSyncSettings> _emailSyncSettings;
     private readonly IClock _clock;
+    private readonly ILogger<EmailSyncService> _logger;
 
     public EmailSyncService(
-        IEnumerable<IEmailSyncObserver> emailSyncObservers,
+        IEnumerable<IEmailSyncEventHandler> emailSyncEventHandlers,
         IEmailClient emailClient,
         IDocumentManager<EmailSyncStateDocument> emailSyncStateDocumentManager,
         IOptionsSnapshot<EmailSyncSettings> emailSyncSettings,
-        IClock clock)
+        IClock clock,
+        ILogger<EmailSyncService> logger)
     {
-        _emailSyncObservers = emailSyncObservers;
+        _emailSyncEventHandlers = emailSyncEventHandlers;
         _emailClient = emailClient;
         _emailSyncStateDocumentManager = emailSyncStateDocumentManager;
         _emailSyncSettings = emailSyncSettings;
         _clock = clock;
+        _logger = logger;
     }
 
     public async Task SyncNextEmailsAsync()
@@ -42,9 +46,11 @@ public class EmailSyncService : IEmailSyncService
             Subject = _emailSyncSettings.Value.SubjectFilter,
         })).ToList();
 
-        // 3. For each email, check if the body should be downloaded. Download them if needed. Also, check if the
-        // attachments should be processed and process them if needed.
-        foreach (var email in emails) await ProcessEmailAsync(email);
+        // 3. Trigger event handlers for each email.
+        foreach (var email in emails)
+        {
+            await _emailSyncEventHandlers.InvokeAsync(handler => handler.EmailSyncedAsync(email), _logger);
+        }
 
         // 4. Update the last synced UID and date.
         await UpdateSyncStateAsync(emails, emailSyncState);
@@ -60,37 +66,5 @@ public class EmailSyncService : IEmailSyncService
         emailSyncState.LastSyncedDateUtc = _clock.UtcNow;
 
         return _emailSyncStateDocumentManager.UpdateAsync(emailSyncState);
-    }
-
-    private async Task ProcessEmailAsync(EmailMessage email)
-    {
-        var shouldDownloadBody = false;
-        foreach (var observer in _emailSyncObservers)
-        {
-            if (await observer.ShouldDownloadBodyAsync(email))
-            {
-                shouldDownloadBody = true;
-            }
-        }
-
-        if (shouldDownloadBody) await _emailClient.DownloadBodyAsync(email);
-
-        foreach (var attachment in email.Content.Attachments) await ProcessAttachmentAsync(email, attachment);
-    }
-
-    private async Task ProcessAttachmentAsync(EmailMessage email, AttachmentMetadata attachment)
-    {
-        string tempPath = string.Empty;
-        foreach (var observer in _emailSyncObservers)
-        {
-            if (!await observer.ShouldProcessAttachmentAsync(email, attachment)) continue;
-
-            if (string.IsNullOrEmpty(tempPath))
-            {
-                tempPath = await _emailClient.DownloadAttachmentToTemporaryLocationAsync(email, attachment);
-            }
-
-            await observer.ProcessTemporarilyDownloadedAttachmentAsync(email, attachment, tempPath);
-        }
     }
 }

@@ -26,3 +26,14 @@ using static Lombiq.EmailClient.Constants.FeatureIds;
         Default,
     ]
 )]
+
+[assembly: Feature(
+    Id = EmailSync,
+    Name = "Lombiq Email Client - Email Sync",
+    Category = "Email",
+    Description = "Syncs emails from an email provider periodically.",
+    Dependencies =
+    [
+        Default,
+    ]
+)]

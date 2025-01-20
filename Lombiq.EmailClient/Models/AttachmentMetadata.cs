@@ -19,10 +19,4 @@ public class AttachmentMetadata
     /// Gets or sets the size of the attachment in bytes.
     /// </summary>
     public long? Size { get; set; }
-
-    /// <summary>
-    /// Gets or sets the file path where the attachment has been downloaded.
-    /// If null, the attachment has not been downloaded.
-    /// </summary>
-    public string DownloadedFilePath { get; set; }
 }
