@@ -51,5 +51,8 @@ public class EmailSyncStartup : StartupBase
         services.AddTransient<IConfigureOptions<EmailSyncSettings>, EmailSyncSettingsConfiguration>();
 
         services.AddScoped<IEmailSyncService, EmailSyncService>();
+
+        // Temporarily commenting out.
+        //// services.AddSingleton<IBackgroundTask, EmailSyncBackgroundTask>();
     }
 }
