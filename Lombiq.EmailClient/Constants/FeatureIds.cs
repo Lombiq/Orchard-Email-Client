@@ -1,6 +1,6 @@
 namespace Lombiq.EmailClient.Constants;
 
-public class FeatureIds
+public static class FeatureIds
 {
     public const string Area = "Lombiq.EmailClient";
 
