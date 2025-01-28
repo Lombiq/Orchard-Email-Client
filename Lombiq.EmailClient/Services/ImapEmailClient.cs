@@ -34,6 +34,10 @@ public class ImapEmailClient : IEmailClient
         var searchQuery = BuildSearchQuery(parameters);
 
         var uids = (await folder.SearchAsync(searchQuery ?? SearchQuery.All)).Select(uniqueId => uniqueId.Id).ToList();
+
+        // Not using UID range search if we're on localhost as it's not supported by some dev servers. UIDs are filtered
+        // in memory.
+        uids = IsLocalhost() ? uids.Where(uid => uid > parameters.AfterImapUniqueId).ToList() : uids;
         if (uids.Count == 0) return [];
 
         var messages = new List<EmailMessage>();
@@ -84,11 +88,12 @@ public class ImapEmailClient : IEmailClient
         return message;
     }
 
-    private static SearchQuery BuildSearchQuery(EmailFilterParameters parameters)
+    private SearchQuery BuildSearchQuery(EmailFilterParameters parameters)
     {
         SearchQuery searchQuery = null;
 
-        if (parameters.AfterImapUniqueId > 0)
+        // Not using UID range search if we're on localhost as it's not supported by some dev servers.
+        if (!IsLocalhost() && parameters.AfterImapUniqueId > 0)
         {
             searchQuery = SearchQuery.Uids(
                 new UniqueIdRange(new UniqueId(parameters.AfterImapUniqueId + 1), UniqueId.MaxValue));
@@ -167,7 +172,10 @@ public class ImapEmailClient : IEmailClient
 
         _imapClient = new ImapClient();
         await _imapClient.ConnectAsync(_imapSettings.Host, _imapSettings.Port, _imapSettings.UseSsl);
-        await _imapClient.AuthenticateAsync(_imapSettings.Username, _imapSettings.Password);
+
+        var username = _imapSettings.RequireAuthentication ? _imapSettings.Username : "user";
+        var password = _imapSettings.RequireAuthentication ? _imapSettings.Password : string.Empty;
+        await _imapClient.AuthenticateAsync(username, password);
     }
 
     private static void ValidateImapProtocol(EmailMessage emailMessage)
@@ -181,13 +189,25 @@ public class ImapEmailClient : IEmailClient
     private static async Task<MemoryStream> SaveAttachmentToMemoryAsync(MimeEntity attachment)
     {
         var stream = new MemoryStream();
-        if (attachment is MimePart mimePart)
+        if (attachment is MessagePart rfc822)
         {
-            await mimePart.Content.DecodeToAsync(stream);
+            await rfc822.Message.WriteToAsync(stream);
         }
+        else
+        {
+            var part = (MimePart)attachment;
+
+            await part.Content.DecodeToAsync(stream);
+        }
+
+        stream.Position = 0;
 
         return stream;
     }
+
+    private bool IsLocalhost() =>
+        _imapSettings.Host == "127.0.0.1" ||
+        _imapSettings.Host.Contains("localhost", StringComparison.OrdinalIgnoreCase);
 
     #region IDisposable
 
