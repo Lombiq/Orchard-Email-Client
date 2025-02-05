@@ -1,4 +1,4 @@
-# Lombiq <add project name here>
+# Lombiq Email Client
 
 ## About
 
@@ -8,7 +8,7 @@ Do you want to quickly try out this project and see it in action? Check it out i
 
 ## Documentation
 
-Add detailed documentation here. If it's a lot of content then create documentation pages under the *Docs* folder and link pages here.
+Add detailed documentation here.
 
 ## Contributing and support
 
