@@ -6,6 +6,7 @@ using Lombiq.EmailClient.Permissions;
 using Lombiq.EmailClient.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
@@ -51,8 +52,6 @@ public class EmailSyncStartup : StartupBase
         services.AddTransient<IConfigureOptions<EmailSyncSettings>, EmailSyncSettingsConfiguration>();
 
         services.AddScoped<IEmailSyncService, EmailSyncService>();
-
-        // Temporarily commenting out.
-        //// services.AddSingleton<IBackgroundTask, EmailSyncBackgroundTask>();
+        services.AddSingleton<IBackgroundTask, EmailSyncBackgroundTask>();
     }
 }

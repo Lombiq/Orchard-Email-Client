@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Lombiq.EmailClient.Services;
 
 [BackgroundTask(
-    Schedule = "0 0 * * *",
+    Schedule = "0 1 * * *",
     Description = "Performs email synchronization.")]
 public class EmailSyncBackgroundTask : IBackgroundTask
 {

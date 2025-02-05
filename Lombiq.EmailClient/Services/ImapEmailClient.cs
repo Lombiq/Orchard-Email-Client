@@ -43,7 +43,8 @@ public class ImapEmailClient : IEmailClient
         var messages = new List<EmailMessage>();
         foreach (var uid in uids)
         {
-            var mimeMessage = await GetOrDownloadMessageAsync(uid, folder);
+            var mimeMessage = await GetOrDownloadMessageByUniqueIdAsync(uid, folder);
+            if (mimeMessage == null) continue;
 
             messages.Add(MapToEmailMessage(mimeMessage, folder.FullName, uid));
         }
@@ -59,7 +60,7 @@ public class ImapEmailClient : IEmailClient
         ArgumentNullException.ThrowIfNull(attachmentMetadata);
 
         ValidateImapProtocol(emailMessage);
-        var message = await GetOrDownloadMessageAsync(emailMessage.Metadata.ImapUniqueId);
+        var message = await GetOrDownloadMessageByUniqueIdAsync(emailMessage.Metadata.ImapUniqueId);
 
         var attachmentEntity = message.Attachments.FirstOrDefault(attachment =>
             attachment.ContentDisposition.FileName == attachmentMetadata.FileName);
@@ -67,7 +68,7 @@ public class ImapEmailClient : IEmailClient
         return await SaveAttachmentToMemoryAsync(attachmentEntity);
     }
 
-    private async Task<MimeMessage> GetOrDownloadMessageAsync(uint uid, IMailFolder openedFolder = null)
+    private async Task<MimeMessage> GetOrDownloadMessageByUniqueIdAsync(uint uid, IMailFolder openedFolder = null)
     {
         if (_downloadedMessages.TryGetValue(uid, out var message))
         {
@@ -82,6 +83,7 @@ public class ImapEmailClient : IEmailClient
 
         var uniqueId = new UniqueId(uid);
         message = await openedFolder.GetMessageAsync(uniqueId);
+        if (message == null) return null;
 
         _downloadedMessages.Add(uid, message);
 
