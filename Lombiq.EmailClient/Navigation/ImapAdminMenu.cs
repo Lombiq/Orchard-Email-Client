@@ -1,29 +1,25 @@
 using Lombiq.EmailClient.Drivers;
+using Lombiq.EmailClient.Permissions;
+using Lombiq.HelpfulLibraries.OrchardCore.Navigation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using System;
-using System.Threading.Tasks;
 
 namespace Lombiq.EmailClient.Navigation;
 
-public sealed class ImapAdminMenu : INavigationProvider
+public sealed class ImapAdminMenu : AdminMenuNavigationProviderBase
 {
-    private readonly IStringLocalizer T;
-
-    public ImapAdminMenu(IStringLocalizer<ImapAdminMenu> stringLocalizer) => T = stringLocalizer;
-
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    public ImapAdminMenu(IHttpContextAccessor hca, IStringLocalizer<ImapAdminMenu> stringLocalizer)
+        : base(hca, stringLocalizer)
     {
-        if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase)) return ValueTask.CompletedTask;
+    }
 
+    protected override void Build(NavigationBuilder builder) =>
         builder.Add(T["Configuration"], configuration => configuration
             .Add(T["Settings"], settings => settings
                 .Add(T["IMAP"], T["IMAP"], demo => demo
                     .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ImapSettingsDisplayDriver.GroupId })
-                    .Permission(Permissions.ImapPermissions.ManageImapSettings)
+                    .Permission(ImapPermissions.ManageImapSettings)
                     .LocalNav()
                 )));
-
-        return ValueTask.CompletedTask;
-    }
 }

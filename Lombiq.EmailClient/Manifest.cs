@@ -13,7 +13,8 @@ using static Lombiq.EmailClient.Constants.FeatureIds;
     Name = "Lombiq Email Client - Base",
     Category = "Email",
     Description = "Base functionality for the email client such as content types. Should be used along with a " +
-        "specific email provider feature (e.g., IMAP)."
+        "specific email provider feature (e.g., IMAP).",
+    EnabledByDependencyOnly = true
 )]
 
 [assembly: Feature(

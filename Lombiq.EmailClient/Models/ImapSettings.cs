@@ -1,6 +1,8 @@
+using Lombiq.HelpfulLibraries.Common.Utilities;
+
 namespace Lombiq.EmailClient.Models;
 
-public class ImapSettings
+public class ImapSettings : ICopier<ImapSettings>
 {
     public string Host { get; set; }
     public int Port { get; set; }

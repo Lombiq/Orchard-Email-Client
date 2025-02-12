@@ -1,6 +1,8 @@
-﻿namespace Lombiq.EmailClient.Models;
+﻿using Lombiq.HelpfulLibraries.Common.Utilities;
 
-public class EmailSyncSettings
+namespace Lombiq.EmailClient.Models;
+
+public class EmailSyncSettings : ICopier<EmailSyncSettings>
 {
     public string SubjectFilter { get; set; }
 

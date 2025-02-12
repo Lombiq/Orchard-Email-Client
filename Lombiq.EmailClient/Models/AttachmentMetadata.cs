@@ -1,17 +1,19 @@
+using System.Net.Mime;
+
 namespace Lombiq.EmailClient.Models;
 
 /// <summary>
-/// Represents metadata for an attachment, such as its filename, MIME type, and size.
+/// Represents metadata for an attachment, such as its file name, MIME type, and size.
 /// </summary>
 public class AttachmentMetadata
 {
     /// <summary>
-    /// Gets or sets the filename of the attachment.
+    /// Gets or sets the file name of the attachment.
     /// </summary>
     public string FileName { get; set; }
 
     /// <summary>
-    /// Gets or sets the MIME type of the attachment (e.g., "application/pdf", "image/jpeg").
+    /// Gets or sets the MIME type of the attachment (e.g., <see cref="MediaTypeNames.Application.Pdf"/>).
     /// </summary>
     public string MimeType { get; set; }
 

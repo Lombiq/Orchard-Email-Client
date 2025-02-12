@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using UniqueId = MailKit.UniqueId;
 
@@ -208,8 +209,7 @@ public class ImapEmailClient : IEmailClient
     }
 
     private bool IsLocalhost() =>
-        _imapSettings.Host == "127.0.0.1" ||
-        _imapSettings.Host.Contains("localhost", StringComparison.OrdinalIgnoreCase);
+        Dns.GetHostAddresses(_imapSettings.Host).Exists(IPAddress.IsLoopback);
 
     #region IDisposable
 
