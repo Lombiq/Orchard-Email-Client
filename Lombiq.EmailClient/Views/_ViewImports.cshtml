@@ -1,0 +1,14 @@
+@inherits OrchardCore.DisplayManagement.Razor.RazorPage<TModel>
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, OrchardCore.DisplayManagement
+@addTagHelper *, OrchardCore.ResourceManagement
+@addTagHelper *, Lombiq.HelpfulLibraries.OrchardCore
+
+@using Microsoft.AspNetCore.Antiforgery
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Routing
+@using Microsoft.Extensions.Options
+@using OrchardCore
+@using OrchardCore.ContentManagement
+@using Lombiq.EmailClient.Models
