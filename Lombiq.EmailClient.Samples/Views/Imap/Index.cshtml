@@ -1,0 +1,26 @@
+﻿@model IEnumerable<Lombiq.EmailClient.Models.EmailMessage>
+
+<h1>@T["Important email messages"]</h1>
+<small>@T["Email messages where the subject contains the \"important\" word."]</small>
+
+<ul>
+    @* The EmailMessage object has a lot of information about the email, but we're only displaying a few fields here. *@
+    @foreach (var emailMessage in Model)
+    {
+        <li class="email">
+            <div class="email__sender"><strong>@T["Sender:"]</strong> @emailMessage.Header.Sender.Address</div>
+            <div class="email__sent"><strong>@T["Sent UTC:"]</strong> @emailMessage.Header.SentDateUtc</div>
+            <div class="email__subject"><strong>@T["Subject:"]</strong> @emailMessage.Header.Subject</div>
+            <div class="email__body">
+                <strong>@T["Body:"]</strong>
+                <code>
+                    @Html.Raw(emailMessage.Content.Body.Body)
+                </code>
+            </div>
+        </li>
+    }
+</ul>
+
+@* END OF TRAINING SECTION: Fetching emails from IMAP server. @*
+
+@* NEXT STATION: Controllers/EmailSyncController.cs *@

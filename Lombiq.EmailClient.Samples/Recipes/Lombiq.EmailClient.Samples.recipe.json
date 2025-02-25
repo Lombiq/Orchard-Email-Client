@@ -1,0 +1,32 @@
+﻿{
+  "name": "Lombiq.EmailClient.Samples",
+  "displayName": "Lombiq Email Client - Samples",
+  "description": "Sample feature utilizing the Lombiq Email Client feature.",
+  "author": "Lombiq Technologies",
+  "website": "https://github.com/Lombiq/Orchard-Chart.js",
+  "version": "1.0",
+  "issetuprecipe": false,
+  "categories": [
+    "training"
+  ],
+  "tags": [
+    "developer",
+    "training",
+    "sample"
+  ],
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "Lombiq.EmailClient.Samples"
+      ]
+    },
+    {
+      "name": "Settings",
+      "ImapSettings": {
+        "Host": "127.0.0.1",
+        "Port": 143
+      }
+    }
+  ]
+}
