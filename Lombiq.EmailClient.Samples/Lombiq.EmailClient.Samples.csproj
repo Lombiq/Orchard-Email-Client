@@ -34,14 +34,4 @@
     <ProjectReference Include="..\Lombiq.EmailClient\Lombiq.EmailClient.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Views\Imap\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Views\_ViewImports.cshtml">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>
