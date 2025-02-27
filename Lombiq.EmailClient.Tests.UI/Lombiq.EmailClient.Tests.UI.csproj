@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="TestEmails\*.eml" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="TestEmails" />
+    <Content Include="TestEmails\*.eml" Pack="true" PackagePath="contentFiles/any/net8.0/TestEmails" />
   </ItemGroup>
 
 </Project>

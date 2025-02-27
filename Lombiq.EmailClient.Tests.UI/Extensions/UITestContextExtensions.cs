@@ -17,6 +17,13 @@ public static class UITestContextExtensions
     public static Task InitSampleEmailsAsync(this UITestContext context)
     {
         var basePath = Path.Combine(AppContext.BaseDirectory, "TestEmails");
+
+        // If not found, use the NuGet contentFiles path.
+        if (!Directory.Exists(basePath))
+        {
+            basePath = Path.Combine(AppContext.BaseDirectory, "contentFiles", "any", "net8.0", "TestEmails");
+        }
+
         return context.CreateAndUseLocalSmtpClientToSendEmailsFromFilesAsync([
             Path.Combine(basePath, "sample_important_1.eml"),
             Path.Combine(basePath, "sample_important_2.eml"),
