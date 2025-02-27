@@ -31,15 +31,10 @@
   <ItemGroup>
     <None Include="Readme.md" />
     <None Include="NuGetIcon.png" Pack="true" PackagePath="" />
-    <None Update="Extensions\sample_important_1.eml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Extensions\sample_important_2.eml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Extensions\sample_not_important.eml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="TestEmails\*.eml" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="TestEmails" />
   </ItemGroup>
 
 </Project>

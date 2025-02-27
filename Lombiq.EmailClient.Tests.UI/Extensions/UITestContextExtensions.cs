@@ -16,7 +16,7 @@ public static class UITestContextExtensions
 
     public static Task InitSampleEmailsAsync(this UITestContext context)
     {
-        var basePath = Path.Combine(Environment.CurrentDirectory, "Extensions");
+        var basePath = Path.Combine(AppContext.BaseDirectory, "TestEmails");
         return context.CreateAndUseLocalSmtpClientToSendEmailsFromFilesAsync([
             Path.Combine(basePath, "sample_important_1.eml"),
             Path.Combine(basePath, "sample_important_2.eml"),
