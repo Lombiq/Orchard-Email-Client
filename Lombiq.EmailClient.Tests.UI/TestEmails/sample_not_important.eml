@@ -1,0 +1,41 @@
+From: Developer <developer@localhost.com>
+To: "sample@localhost.com" <sample@localhost.com>
+Subject: Uninteresting sample
+Date: Mon, 24 Feb 2025 12:37:07 +0000
+Message-Id: <em2736adbc-861d-4927-99e1-bf2bd2b7a0b7@mark-laptop>
+Reply-To: Developer <developer@localhost.com>
+User-Agent: eM_Client/8.2.1721.0
+Mime-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="------=_MB5D12DEC9-3C13-4205-A6C8-2772BB5E8F57"
+
+--------=_MB5D12DEC9-3C13-4205-A6C8-2772BB5E8F57
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+
+This is a test email that shouldn't be displayed when filtered for the=20
+"important" word in the subject.
+--------=_MB5D12DEC9-3C13-4205-A6C8-2772BB5E8F57
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<html><head>
+
+<style id=3D"css_styles">=20
+blockquote.cite { margin-left: 5px; margin-right: 0px; padding-left: 10px;=
+ padding-right:0px; border-left: 1px solid #cccccc }
+blockquote.cite2 {margin-left: 5px; margin-right: 0px; padding-left: 10px;=
+ padding-right:0px; border-left: 1px solid #cccccc; margin-top: 3px; padding=
+-top: 0px; }
+a img { border: 0px; }
+li[style=3D'text-align: center;'], li[style=3D'text-align: center; '], li[s=
+tyle=3D'text-align: right;'], li[style=3D'text-align: right; '] {  list-sty=
+le-position: inside;}
+body { font-family: Segoe UI; font-size: 12pt;   }=20
+.quote { margin-left: 1em; margin-right: 1em; border-left: 5px #ebebeb soli=
+d; padding-left: 0.3em; }
+ </style>
+</head>
+<body>This is a test email that shouldn't be displayed when filtered for th=
+e "important" word in the subject.</body></html>
+--------=_MB5D12DEC9-3C13-4205-A6C8-2772BB5E8F57--
