@@ -22,7 +22,7 @@ public static class UITestContextExtensions
 
     public static async Task SetImapPortOnAdminAsync(this UITestContext context)
     {
-        await context.GoToRelativeUrlAsync("/Admin/Settings/ImapSettings");
+        await context.GoToAdminRelativeUrlAsync("/Settings/ImapSettings");
         await context.FillInWithRetriesAsync(
             By.Id("ISite_ImapSettings_Port"),
             context.SmtpServiceRunningContext.ImapPort.ToTechnicalString());
