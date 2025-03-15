@@ -1,5 +1,7 @@
 # Lombiq Email Client
 
+[![Lombiq.EmailClient NuGet](https://img.shields.io/nuget/v/Lombiq.EmailClient?label=Lombiq.EmailClient)](https://www.nuget.org/packages/Lombiq.EmailClient/) [![Lombiq.EmailClient.Tests.UI NuGet](https://img.shields.io/nuget/v/Lombiq.EmailClient.Tests.UI?label=Lombiq.EmailClient.Tests.UI)](https://www.nuget.org/packages/Lombiq.EmailClient.Tests.UI/)
+
 ## About
 
 An email client for Orchard Core that can fetch emails (including attachments) from a server. Right now it supports IMAP only. There's also a feature that can sync emails periodically from a background task in an extensible way; you can create your content items from emails for example.
