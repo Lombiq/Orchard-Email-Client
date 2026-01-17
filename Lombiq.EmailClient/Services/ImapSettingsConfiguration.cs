@@ -14,7 +14,7 @@ public class ImapSettingsConfiguration : IConfigureOptions<ImapSettings>
     {
         if (!string.IsNullOrEmpty(options.Host)) return;
 
-        var settings = _siteService.GetSettingsAsync<ImapSettings>().GetAwaiter().GetResult();
+        var settings = _siteService.GetSettings<ImapSettings>();
 
         settings.CopyTo(options);
     }
@@ -30,7 +30,7 @@ public class EmailSyncSettingsConfiguration : IConfigureOptions<EmailSyncSetting
     {
         if (!string.IsNullOrEmpty(options.SubjectFilter)) return;
 
-        var settings = _siteService.GetSettingsAsync<EmailSyncSettings>().GetAwaiter().GetResult();
+        var settings = _siteService.GetSettings<EmailSyncSettings>();
 
         settings.CopyTo(options);
     }
