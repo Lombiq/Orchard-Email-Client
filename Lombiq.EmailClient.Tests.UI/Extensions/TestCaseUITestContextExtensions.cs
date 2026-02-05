@@ -17,9 +17,9 @@ public static class TestCaseUITestContextExtensions
         await context.GoToImapTestAsync();
 
         context.GetAll(By.ClassName("email")).Count.ShouldBe(2);
-        context.Exists(By.XPath($"//div[contains(text(), 'developer@localhost.com')]"));
-        context.Exists(By.XPath($"//div[contains(text(), '2025-02-24T12:35:19')]"));
-        context.Exists(By.XPath($"//div[contains(text(), 'Very important sample')]"));
-        context.Exists(By.XPath($"//code[contains(text(), 'This email is sent for testing purposes.')]"));
+        context.Exists(By.XPath("//div[contains(text(), 'developer@localhost.com')]"));
+        context.Exists(By.XPath("//div[contains(text(), '2025-02-24T12:35:19')]"));
+        context.Exists(By.XPath("//div[contains(text(), 'Very important sample')]"));
+        context.Exists(By.XPath("//code[contains(text(), 'This email is sent for testing purposes.')]"));
     }
 }
