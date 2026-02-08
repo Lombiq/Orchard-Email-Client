@@ -15,11 +15,11 @@ public sealed class EmailSyncAdminMenu : AdminMenuNavigationProviderBase
     }
 
     protected override void Build(NavigationBuilder builder) =>
-        builder.Add(T["Configuration"], configuration => configuration
+        builder
             .Add(T["Settings"], settings => settings
                 .Add(T["Email Sync"], T["Email Sync"], demo => demo
                     .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = EmailSyncSettingsDisplayDriver.GroupId })
                     .Permission(EmailSyncPermissions.ManageEmailSyncSettings)
                     .LocalNav()
-                )));
+                ));
 }
