@@ -7,7 +7,6 @@
   <Import Condition="'$(NuGetBuild)' == 'true'" Project="Sdk.props" Sdk="Lombiq.MSBuild.OrchardCore.Module.Sdk" Version="1.0.1-alpha.6.osoe-1208" />
 
   <PropertyGroup>
-    <IsLombiqProject>true</IsLombiqProject>
     <Title>Lombiq Email Client for Orchard Core - Samples</Title>
     <CopyrightYear>2025</CopyrightYear>
     <DescriptionBody>Sample content that demonstrates the features of Lombiq Email Client module for Orchard Core.</DescriptionBody>
