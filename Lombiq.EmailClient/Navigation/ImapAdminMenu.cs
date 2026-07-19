@@ -15,11 +15,11 @@ public sealed class ImapAdminMenu : AdminMenuNavigationProviderBase
     }
 
     protected override void Build(NavigationBuilder builder) =>
-        builder.Add(T["Configuration"], configuration => configuration
+        builder
             .Add(T["Settings"], settings => settings
                 .Add(T["IMAP"], T["IMAP"], demo => demo
                     .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ImapSettingsDisplayDriver.GroupId })
                     .Permission(ImapPermissions.ManageImapSettings)
                     .LocalNav()
-                )));
+                ));
 }
